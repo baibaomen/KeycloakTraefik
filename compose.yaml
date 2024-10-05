@@ -43,9 +43,8 @@ services:
       - KC_HTTP_ENABLED=true
       - KC_HEALTH_ENABLED=false   # Enable health as needed see docs
       #- KC_PROXY_HEADERS=xforwarded, forwarded #CAUTION see docs on forwarding
-      - KC_LOG=console,file   # See docs on logs
+      - KC_LOG=console  # See docs on logs
       - KC_LOG_LEVEL=WARN  # For debugging set to DEBUG see docs on logs
-      - KC_LOG_FILE=/opt/keycloak/logs/keycloak.log
       - KC_HOSTNAME_STRICT=true
     labels:
       - "traefik.enable=true"
@@ -55,11 +54,9 @@ services:
       - "traefik.http.services.my-container.loadbalancer.server.port=8080"  # Route to port 8080
     networks:
       - web
-      - internal
     volumes:
       #- ./certs:/opt/keycloak/conf/ #use if you are not having traefik handle ssl
       - ./themes:/opt/keycloak/themes   #mounts an external directory for customizing themes 
-      - keycloak-logs:/opt/keycloak/logs
     ports:
       - "8443:8443"
       #- "8080:8080" #for use when using keycloak to handle ssl
@@ -79,14 +76,11 @@ services:
       - ./postgresconf/postgresql.conf:/etc/postgresql/postgresql.conf
       - db-data:/var/lib/postgresql/data
     networks:
-     - internal
+     - web
     restart: always
 volumes:
   db-data:
   traefik-logs:
-  keycloak-logs:
 networks:
   web:
-    driver: bridge
-  internal:
     driver: bridge
